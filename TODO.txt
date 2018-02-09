@@ -1,0 +1,18 @@
+1. Конфигуратор -> название бд, путь к бд, имя пользователя, пароль (в виде синглтона)
+2. Определить в классе Object метод для добавления attr_acessor'ов для введенных полей будущей записи (code_pieces present)
+3. Определить в классе для доступа к бд призрачные методы by name, by index и т.д.
+4. Все данные методами поиска и запросов возвращать массивами
+5. Возможно добавить свой DSL
+6. Для доступа к бд использовать адаптер?
+7. Основа - паттерн Data Mapper
+
+###!!!!!!!!
+Разница между Data Mapper и Active Record: Data Mapper ничего не знает про базу данных
+Active Record:
+    user = User.new
+    user.username = 'philipbrown'
+    user.save
+Data Mapper:
+    user = User.new
+    user.username = 'philipbrown'
+    -----user.save------

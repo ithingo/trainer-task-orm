@@ -1,0 +1,25 @@
+#SomeClassName is Data Mapper?
+
+SomeClassName.connect(schema, user, pass, port?)
+
+SomeClassName.create_table(name: string:, age: integer:, hair_color: string:)
+#OR USE DSL:
+someClassName.create_table do |table|
+	table.name = ""
+	table.age = 0
+	hair_color = string
+end
+#And there i should chech and compare each key_type with real_data_type
+#And then interpolate column names and real_data_type into string with query
+
+#BUT how to chech varchar(length) or text? or it doesn't matter?
+
+=begin
+
+Better
+SomeClassName is Data Mapper, Item is our class with no properties, so
+1) create empty table with single column id of integer autoincrement index USING SomeClassName
+2) instantiating Item with block use DSL concept and add all column with compared real-data-type on-the-fly 
+3) define interface methods for CRUD operation inside SomeClassName 
+
+=end
