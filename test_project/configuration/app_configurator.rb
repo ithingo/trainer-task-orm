@@ -3,11 +3,7 @@ class App
     def run
       unless @instance
         yield(self)
-        require 'pg'
-
-        require_relative '../exceptions/wrong_params_number_error'
-        
-
+        require_relative '../modules/abstract_data_object_mapper/dynamic_object_and_table_operations'
         require_relative '../ds_objects_with_mappers/abstract_data_object/abstract_data_object'
         require_relative '../ds_objects_with_mappers/abstract_data_object/abstract_data_object_mapper'
         require_relative '../ds_objects_with_mappers/concrete_domains/person/person'
@@ -26,7 +22,7 @@ class App
 
   class DBConfigurator
     class << self
-      attr_accessor :db_name, :user, :password
+      attr_accessor :db_name, :username, :pass
       def start
         unless @instance
           yield(self)

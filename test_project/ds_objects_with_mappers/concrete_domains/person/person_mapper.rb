@@ -1,2 +1,2 @@
-class PersonMapper
+class PersonMapper < AbstractDataObjectMapper
 end

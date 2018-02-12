@@ -1,0 +1,2 @@
+class WrongParamsNumberError < StandardError
+end

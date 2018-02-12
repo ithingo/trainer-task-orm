@@ -1,2 +1,2 @@
-class CellPhoneMapper
+class CellPhoneMapper < AbstractDataObjectMapper
 end
