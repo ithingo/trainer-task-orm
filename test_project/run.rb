@@ -8,6 +8,9 @@ App.run do |app|
   end
 end
 
+#raise exception if user mixed login and pass up
+# maybe make test connection to db?
+
 # p App::DBConfigurator.db_name
 
 =begin
