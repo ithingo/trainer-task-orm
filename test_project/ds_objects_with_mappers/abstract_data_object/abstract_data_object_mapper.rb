@@ -9,12 +9,13 @@ class AbstractDataObjectMapper
   def attach(item)
     @items_array << item
     @item_class = item.class.to_s.downcase
-    @item_sample ||= @table_name.clone
+    @dump_var_type ||= object_props_dump(item)
   end
 
   def save
     connection = connect
     @table_name = create_table(connection)
+    # connection.exec("INSERT INTO #{@table_name} ()")
     disconnect(connection)
   end
 
@@ -69,11 +70,10 @@ class AbstractDataObjectMapper
   end
 
   def define_column_type_on_properties
-    dump_var_type = object_props_dump(@item_sample)
     dump_with_sql_types = {}
-    dump_var_type.each_key do |key|
-      sql_type = dump_var_type[key]
-      dump_with_sql_types[key] = sql_type
+    @dump_var_type.each_key do |key|
+      sql_type = @dump_var_type[key]
+      dump_with_sql_types[key] = get_real_type(sql_type)
     end
     dump_with_sql_types
   end
@@ -81,10 +81,10 @@ class AbstractDataObjectMapper
   def get_real_type(old_type)
     sql_type = ''
     case old_type
-    when 'fixnum'
+    when 'fixnum', 'integer'
       sql_type = 'INTEGER'
     when 'float'
-      sql_type = 'NUMERIC'
+      sql_type = 'REAL'
     when 'string'
       sql_type = 'TEXT'
     else
@@ -98,22 +98,31 @@ class AbstractDataObjectMapper
     columns_hashed = define_column_type_on_properties
     columns_stringed = []
     columns_hashed.each do |var, sql_type|
-      stringed_column = "#{var} #{sql_type}"
+      columns_stringed << "#{var} #{sql_type}"
     end
     columns_stringed
   end
 
+  def get_column_names
+    columns_array = []
+    @dump_var_type.each_key {|key| columns_array << key}
+    columns_array
+  end
+
+  # def transform_column_names_to_string
+  #   columns_array = get_column_names
+  #
+  # end
+
   def create_table(connection)
     table_name = "#{@item_class}_test_table"
 
-    # check if table exists
-
-    # insert into query an array joined by ','
-    connection.exec(%Q?
+    query =  %W?
       CREATE TABLE IF NOT EXISTS #{table_name} (
         #{transform_to_column_array_for_table.join(', ')}
       );
-    ?)
+    ?
+    connection.exec query.join(" ")
 
     table_name
   end
