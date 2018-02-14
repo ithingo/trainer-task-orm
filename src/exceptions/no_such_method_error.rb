@@ -1,2 +1,0 @@
-class NoSuchMethodError < NoMethodError
-end

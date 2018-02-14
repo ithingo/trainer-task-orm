@@ -1,2 +1,0 @@
-class NoColumnParamsError < StandardError
-end

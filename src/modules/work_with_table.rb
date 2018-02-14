@@ -1,6 +1,8 @@
-require_relative '../exceptions/no_column_params_error'
-require_relative '../exceptions/no_such_column_data_type'
-require_relative '../exceptions/no_such_method_error'
+# require_relative '../exceptions/no_column_params_error'
+# require_relative '../exceptions/no_such_column_data_type'
+# require_relative '../exceptions/no_such_method_error'
+require_relative 'own_exceptions'
+include OwnExceptions
 
 module WorkWithTable
   private

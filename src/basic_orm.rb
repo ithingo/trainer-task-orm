@@ -16,7 +16,7 @@ class BasicORM
     table.freeze
   end
 end
-#
+# 
 # test_1 = BasicORM.new do |app|
 #   app.create_table do |table|
 #     table.add_column :name, table.string, 'not null primary key'
