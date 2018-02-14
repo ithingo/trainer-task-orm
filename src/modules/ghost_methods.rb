@@ -6,7 +6,6 @@ module GhostMethods
       self.class.send(:define_method, type)  { return type.to_s }
     end
   end
-  # private
   #
   # def method_missing(method_name, *args, &closure)
   #   if method_name.to_s =~ /^find_by_(.+)$/

@@ -32,9 +32,13 @@ module TypeOperations
       end
       sql_type
     end
+  end
 
+  module TypeForDBConversion
 #   convert operation for writing to and getting from db operations
-
+    def stringify_struct(struct)
+    #   convert Struct to string with it's params
+    end
   end
 
   module Overridden

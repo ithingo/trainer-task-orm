@@ -1,6 +1,5 @@
 Dir[File.dirname(__FILE__) + '/src/modules/*.rb'].each { |file| require file }
 Dir[File.dirname(__FILE__) + '/src/*.rb'].each { |file| require file }
-include OwnExceptions
 
 test_1 = BasicORM.new do |app|
   app.create_table do |table|

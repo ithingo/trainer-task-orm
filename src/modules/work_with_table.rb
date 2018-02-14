@@ -7,32 +7,33 @@ module WorkWithTable
 
     Column = Struct.new(:col_name, :type, :options)
 
+    attr_reader :table_columns
+
     def initialize
       @table_columns = Array.new
       @items = Array.new
       @allowed_types = [:text, :string, :float, :integer, :double, :boolean]
       create_methods_for_types @allowed_types
-
+      @user_primary_key = false
       yield(self)
+      self.freeze
     end
 
     def add_column(col_name, col_type, *col_params)
       raise NoColumnParamsError if col_name == '' || col_type == ''
       raise NoSuchColumnDataType unless correct_data_type? @allowed_types, col_type
+
+      @user_primary_key = true if check_user_primary_key col_params
       @table_columns << Column.new(col_name, col_type, *col_params)
     end
 
     private
 
-    def create_methods_for_types(type_array)
-      type_array.each do |type|
-        self.class.send(:define_method, type)  { return type.to_s }
+    def check_user_primary_key(col_param)
+      unless col_param.first.nil?
+        return true if col_param.first.scan(/primary key/)
       end
+      return false
     end
-
-    def correct_data_type?(type_array, type)
-        return type_array.include? type.to_sym
-    end
-
   end
 end
