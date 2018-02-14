@@ -1,0 +1,2 @@
+class NoSuchColumnDataType < StandardError
+end

@@ -1,0 +1,2 @@
+class NoColumnParamsError < StandardError
+end
