@@ -1,7 +1,3 @@
-# require_relative '../exceptions/no_column_params_error'
-# require_relative '../exceptions/no_such_column_data_type'
-# require_relative '../exceptions/no_such_method_error'
-require_relative 'own_exceptions'
 include OwnExceptions
 
 module WorkWithTable
@@ -19,7 +15,7 @@ module WorkWithTable
 
     def add_column(col_name, col_type, *col_params)
       # raise NoSuchMethodError
-      raise NoColumnParamsError unless col_name || col_type
+      raise NoColumnParamsError if col_name == '' || col_type == ''
       raise NoSuchColumnDataType unless correct_data_type? col_type
       @table_columns << Column.new(col_name, col_type, *col_params)
     end

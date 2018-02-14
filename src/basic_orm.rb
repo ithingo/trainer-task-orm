@@ -1,6 +1,3 @@
-require_relative 'modules/work_with_table'
-require_relative 'modules/type_converter'
-
 class BasicORM
   include WorkWithTypes::TypeConverter
   include WorkWithTable
@@ -16,12 +13,3 @@ class BasicORM
     table.freeze
   end
 end
-# 
-# test_1 = BasicORM.new do |app|
-#   app.create_table do |table|
-#     table.add_column :name, table.string, 'not null primary key'
-#     table.add_column :age, table.integer, 'not null'
-#     table.add_column :address, table.text
-#     p app.inspect
-#   end
-# end
