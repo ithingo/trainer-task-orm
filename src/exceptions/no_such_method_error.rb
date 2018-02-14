@@ -1,0 +1,2 @@
+class NoSuchMethodError < NoMethodError
+end

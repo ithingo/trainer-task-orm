@@ -1,30 +1,27 @@
-require_relative '../specific/modules/e_converter'
-require_relative '../specific/modules/ghost_methods'
-require_relative '../specific/modules/file_operations'
-require_relative '../specific/modules/db_connection'
-require_relative '../specific/modules/crud_on_items'
-
-require_relative '../specific/overriden/object'
+require_relative 'modules/work_with_table'
+require_relative 'modules/type_converter'
 
 class BasicORM
-  include TypeConverter
+  include WorkWithTypes::TypeConverter
+  include WorkWithTable
 
   def initialize
     @table_name = "#{self.class.to_s.downcase}_table"
-    table = yield(self)
-    # p @table_name
+    @table = yield(self)
+    p @table
   end
 
   def create_table(&closure)
-
+    table = Table.new(&closure)
+    table.freeze
   end
-
 end
 #
-# BasicORM.new({})
-#
-# class Person < BasicORM
-#
+# test_1 = BasicORM.new do |app|
+#   app.create_table do |table|
+#     table.add_column :name, table.string, 'not null primary key'
+#     table.add_column :age, table.integer, 'not null'
+#     table.add_column :address, table.text
+#     p app.inspect
+#   end
 # end
-#
-# Person.new({})

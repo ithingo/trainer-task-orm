@@ -1,47 +1,38 @@
-require_relative '../../specific/exceptions/no_column_params_error'
+require_relative '../exceptions/no_column_params_error'
+require_relative '../exceptions/no_such_column_data_type'
+require_relative '../exceptions/no_such_method_error'
 
 module WorkWithTable
+  private
+
   class Table
-    Column = Struct.new(:column_name, :type, :options)
+    Column = Struct.new(:col_name, :type, :options)
 
     def initialize
-      @table_skeleton = Array.new
+      @table_columns = Array.new
+      @allowed_types = [:text, :string, :float, :integer, :double, :boolean]
+      create_methods_for_types @allowed_types
       yield(self)
     end
 
-    def add_column(column_params = {})
-      # raise NoColumn... name\no type name.. if they are nil or not compared to existed types
-      # types should be invoked by table_in_iterator.types.string\integer
-      # if all's ok, add new column to the array
-      raise NoSuchColumnDataType unless correct_data_type? column_params
-      raise NoColumnParamError unless column_params[:column_params] || column_params[:type] # check if key present
-      @table_column << Column.new(column_params[:column_name], column_params[:type], column_params[:options])
+    def add_column(col_name, col_type, *col_params)
+      # raise NoSuchMethodError
+      raise NoColumnParamsError unless col_name || col_type
+      raise NoSuchColumnDataType unless correct_data_type? col_type
+      @table_columns << Column.new(col_name, col_type, *col_params)
     end
 
-    # def types
-    #   def string
-    #
-    #   end
-    # end
     private
 
-    def correct_data_type?(options = {})
-
+    def create_methods_for_types(type_array)
+      type_array.each do |type|
+        self.class.send(:define_method, type)  { return type.to_s }
+      end
     end
+
+    def correct_data_type?(type)
+        return @allowed_types.include? type.to_sym
+    end
+
   end
 end
-
-=begin
-how it should look
-
-class Test < BasicOrm
-end
-
-test_1 = Test.new do |app|
-  app.create_table do |table|
-    table.add_column :name, table.types.string, 'not null primary key',
-    table.add_column :age, table.types.integer, 'not null'
-    table.add_column :address, table.types.text
-  end
-end
-=end
