@@ -1,6 +1,9 @@
-module WorkWithTypes
+module TypeOperations
   module TypeConverter
     private
+    def correct_data_type?(type_array, type)
+      return type_array.include? type.to_sym
+    end
 
     def stringify_hash_keys(params={})
       result = Hash[params.map { |key, value| [key.to_s, convert_to_sql_type(value)] }]

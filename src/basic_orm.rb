@@ -1,5 +1,4 @@
 class BasicORM
-  include WorkWithTypes::TypeConverter
   include WorkWithTable
 
   def initialize
