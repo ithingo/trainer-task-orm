@@ -1,19 +1,54 @@
 module TypeOperations
   module TypeConverter
     private
+
     def correct_data_type?(type_array, type)
       return type_array.include? type.to_sym
     end
 
-    def stringify_hash_keys(params={})
-      result = Hash[params.map { |key, value| [key.to_s, convert_to_sql_type(value)] }]
+    def struct_to_string(struct)
+      result = ''
+      struct.to_h.each do |key, value|
+        if key == :col_name
+          result += "#{value.to_s} "
+        elsif key == :type
+          result += "#{convert_to_sql_type(value)} "
+        elsif !value.nil?
+          result += "#{value.upcase}"
+        end
+      end
+      result
     end
 
-    def get_class_name_downcased(value)
-      value.class.to_s.downcase
+    def struct_arr_to_string_arr(struct_arr)
+      struct_arr.map { |struct| struct_to_string(struct) }
+    end
+
+    def get_class_name_downcased
+      "#{self.class.to_s.downcase}_table"
+    end
+
+    def create_methods_for_types(type_array)
+      type_array.each do |type|
+        self.class.send(:define_method, type)  { return type.to_s }
+      end
+    end
+
+    def new_item_some_params_nil?(new_item_options = {}, table_structure_columns)
+      table_structure_columns.each do |col_name|
+        unless new_item_options[col_name]
+          return false
+        end
+      end
+      return true
+    end
+
+    def get_table_columns(table_structure)
+      table_structure.columns.map {|key| key.to_h[:col_name] }
     end
 
     def convert_to_sql_type(old_type)
+      sql_type = ''
       case old_type
       when 'integer'
         sql_type = 'INTEGER'
@@ -28,20 +63,9 @@ module TypeOperations
       when 'boolean'
         sql_type = 'BOOLEAN'
       else
-        sql_type = 'TEXT'
+        sql_type = old_type
       end
       sql_type
     end
-  end
-
-  module TypeForDBConversion
-#   convert operation for writing to and getting from db operations
-    def stringify_struct(struct)
-    #   convert Struct to string with it's params
-    end
-  end
-
-  module Overridden
-
   end
 end

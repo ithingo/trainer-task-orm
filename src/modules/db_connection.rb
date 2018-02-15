@@ -3,7 +3,7 @@ module DBConnection
 
   def connect
     begin
-      connection = PG.connect :dbname => DB_NAME, :user => USERNAME, :password => PASS
+      connection = PG.connect :dbname => 'crieera', :user => 'crieera', :password => ''
     rescue PG::Error => e
       puts e.message
     end
