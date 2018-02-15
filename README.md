@@ -15,3 +15,11 @@ test_1 = BasicORM.new do |app|
   end
 end
 ```
+
+## New item creation
+
+```ruby
+test_1.create(name: "Sean Connery", age: 72, address: "New York")
+
+#wrong: test_1.create(name: "Sean Connery", age: 72, address: "New York", year: 2018) (value with extra key will be removed)
+```
