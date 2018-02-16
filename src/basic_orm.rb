@@ -23,16 +23,19 @@ class BasicORM
     end
   end
 
-  def save(item)
-
+  def save
+    raise ArrayOfItemsIsEmptyError, 'There is no items to save' if @items.length == 0
+    @items.each do |item|
+      insert_to_table(@table_name, @table_columns_array, item)
+    end
   end
 
   def remove(item)
-
+    #   rescue ItemsAreNotSaved, print "Saving to db -> save()" unless @items.nil?
   end
 
   def change(item)
-
+  #   rescue ItemsAreNotSaved, print "Saving to db -> save()" unless @items.nil?
   end
 
   private
@@ -43,8 +46,8 @@ class BasicORM
     else
       id_primary_key = 'primary key'.upcase
     end
-    p @table_structure.user_primary_key
-    connection = connect
+    @table_structure.user_primary_key
+    # connection = connect
 
     query =  %W?
       CREATE TABLE IF NOT EXISTS #{@table_name} (
@@ -52,10 +55,22 @@ class BasicORM
         #{struct_arr_to_string_arr(@table_structure.columns).join(', ')}
       );
     ?
-    p query.join(" ")
-    
-    connection.exec query.join(" ")
-    disconnect(connection)
+    # connection.exec query.join(" ")
+    # disconnect(connection)
+  end
+
+  def insert_to_table(table_name, table_columns, item_object)
+    unless item_object.nil?
+      connection = connect
+
+      query = %W?
+        INSERT INTO #{table_name} (#{table_columns_to_string(table_columns)})
+        VALUES (#{item_object.to_s})
+      ?
+      
+      connection.exec query.join(" ")
+      disconnect(connection)
+    end
   end
 
   class Item
@@ -74,6 +89,20 @@ class BasicORM
         self.send("#{key}=".to_sym, new_param_options[key])
       end
 
+    end
+
+    def to_s
+      attr = self.instance_variables
+      values_for_attr = Array.new
+      attr.each do |var|
+        column_value = self.send(var.to_s.gsub('@', '').to_sym)
+        if column_value.class.to_s.downcase.eql? 'string'
+          values_for_attr << "'#{column_value}'"
+        else
+          values_for_attr << column_value
+        end
+      end
+      values_for_attr.join(", ")
     end
   end
 end

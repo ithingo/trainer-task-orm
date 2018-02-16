@@ -1,5 +1,5 @@
 module OwnExceptions
-  class ItemNotSupported  #< ....
+  class ItemNotSupported < StandardError
   end
 
   class NoColumnParamsError < StandardError
@@ -18,5 +18,8 @@ module OwnExceptions
   end
 
   class WrongParamsNumberError < StandardError
+  end
+
+  class ArrayOfItemsIsEmptyError < StandardError
   end
 end

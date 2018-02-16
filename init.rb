@@ -11,6 +11,7 @@ test_1 = BasicORM.new do |app|
   end
 end
 
-test_1.create(name: "Sean Connery", age: 72, address: "New York", year: 2018)
-# Right test_1.create(name: "Sean Connery", age: 72, address: "New York")
+test_1.create(name: "Vladimir Putin", age: 65, address: "Moscow")
+test_1.create(name: "Donald J. Trump", age: 71, address: "Washington D.C.")
+test_1.save
 # Wrong test_1.create(name: "Sean Connery", age: 72, address: "New York", year: 2018)

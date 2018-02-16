@@ -18,8 +18,8 @@ module WorkWithTable
     end
 
     def add_column(col_name, col_type, *col_params)
-      raise NoColumnParamsError if col_name == '' || col_type == ''
-      raise NoSuchColumnDataType unless correct_data_type? @allowed_types, col_type
+      raise NoColumnParamsError, 'Base table columns are not specified' if col_name == '' || col_type == ''
+      raise NoSuchColumnDataType, "No such column data type: #{col_type}" unless correct_data_type? @allowed_types, col_type
 
       if check_user_primary_key col_params
         @user_primary_key = true

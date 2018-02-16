@@ -47,6 +47,11 @@ module TypeOperations
       table_structure.columns.map {|key| key.to_h[:col_name] }
     end
 
+    def table_columns_to_string(table_columns_array)
+      table_columns_array.map{ |col| col.to_s}.join(", ")
+      # table_columns_array.join(", ")
+    end
+
     def convert_to_sql_type(old_type)
       sql_type = ''
       case old_type
