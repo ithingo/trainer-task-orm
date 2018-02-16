@@ -67,7 +67,7 @@ class BasicORM
         INSERT INTO #{table_name} (#{table_columns_to_string(table_columns)})
         VALUES (#{item_object.to_s})
       ?
-      
+
       connection.exec query.join(" ")
       disconnect(connection)
     end
