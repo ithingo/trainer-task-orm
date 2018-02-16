@@ -121,7 +121,7 @@ module TypeOperations
       allowed_operations_for_numeric = ['=', '<', '>', '<=', '>=', '!=']
       if allowed_operations_for_numeric.include? relation
         numeric_pattern = /[-+]?\d+(\.\d+)?/
-        matches = numeric_pattern.match numeric
+        matches = numeric_pattern.match data
         return true if matches
       elsif allowed_operations_for_strings.include? relation
         return true
