@@ -1,15 +1,17 @@
 class BasicORM
-  include OwnExceptions
+  include OwnExceptions::Common
   include DBConnection
+  include TypeOperations::AbstractDomainObject
   include WorkWithTable
   include TypeOperations::TypeConverter
+  include TypeOperations::SqlQueriesImitation
 
   def initialize
     @table_name = get_class_name_downcased
     @table_structure = yield(self)
     @table_columns_array = get_table_columns(@table_structure)
+    @logger = Logger.new
     @items = Array.new
-
     save_table
   end
 
@@ -28,14 +30,15 @@ class BasicORM
     @items.each do |item|
       insert_to_table(@table_name, @table_columns_array, item)
     end
+    @items = Array.new
   end
 
-  def remove(item)
-    #   rescue ItemsAreNotSaved, print "Saving to db -> save()" unless @items.nil?
+  def delete(condition)
+    modify_data('delete', condition)
   end
 
-  def change(item)
-  #   rescue ItemsAreNotSaved, print "Saving to db -> save()" unless @items.nil?
+  def change(condition)
+    modify_data('update', condition)
   end
 
   private
@@ -48,7 +51,6 @@ class BasicORM
     end
     @table_structure.user_primary_key
     # connection = connect
-
     query =  %W?
       CREATE TABLE IF NOT EXISTS #{@table_name} (
         id BIGSERIAL #{id_primary_key},
@@ -61,48 +63,30 @@ class BasicORM
 
   def insert_to_table(table_name, table_columns, item_object)
     unless item_object.nil?
-      connection = connect
-
+      # connection = connect
       query = %W?
         INSERT INTO #{table_name} (#{table_columns_to_string(table_columns)})
         VALUES (#{item_object.to_s})
       ?
-
-      connection.exec query.join(" ")
-      disconnect(connection)
+      # connection.exec query.join(" ")
+      # disconnect(connection)
     end
   end
 
-  class Item
-    def initialize(new_param_options = {}, table_columns)
-      # dynamically generation attr_accessors at first, then asserting new value to existed instance variables
-
-      table_columns.each do |key|
-        self.class.send(:define_method, "#{key}=".to_sym) do |value|
-          instance_variable_set("@" + key.to_s, value)
-        end
-
-        self.class.send(:define_method, key.to_sym) do
-          instance_variable_get("@" + key.to_s)
-        end
-
-        self.send("#{key}=".to_sym, new_param_options[key])
-      end
-
+  def modify_data(action, pseudo_query)
+    unless @items.length == 0
+      puts 'Saving items...'
+      save
+      raise ItemsAreNotSaved, "You try to #{action} something, but items are not saved"
     end
+    raise NoQueryForAction, "There is no condition for action #{action}" if pseudo_query.nil?
 
-    def to_s
-      attr = self.instance_variables
-      values_for_attr = Array.new
-      attr.each do |var|
-        column_value = self.send(var.to_s.gsub('@', '').to_sym)
-        if column_value.class.to_s.downcase.eql? 'string'
-          values_for_attr << "'#{column_value}'"
-        else
-          values_for_attr << column_value
-        end
-      end
-      values_for_attr.join(", ")
+    case action
+    when 'delete'
+      p pseudo_query_to_real @table_columns_array, pseudo_query
+    when 'update'
+
     end
   end
+
 end

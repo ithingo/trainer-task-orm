@@ -14,3 +14,6 @@ end
 test_1.create(name: "Vladimir Putin", age: 65, address: "Moscow")
 test_1.create(name: "Donald J. Trump", age: 71, address: "Washington D.C.")
 test_1.save
+
+test_1.delete 'name like Donald%'
+# test_1.delete 'name is Donald%'

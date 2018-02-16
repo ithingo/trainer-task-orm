@@ -1,25 +1,44 @@
 module OwnExceptions
-  class ItemNotSupported < StandardError
+  module Common
+    class ItemNotSupported < StandardError
+    end
+
+    class NoColumnParamsError < StandardError
+    end
+
+    class NoSuchColumnDataType < StandardError
+    end
+
+    class NoSuchFileError < Errno::ENOENT
+    end
+
+    class NoSuchMethodError < NoMethodError
+    end
+
+    class NotPermittedForWritingFile < Errno::EACCES
+    end
+
+    class WrongParamsNumberError < StandardError
+    end
+
+    class ArrayOfItemsIsEmptyError < StandardError
+    end
   end
 
-  class NoColumnParamsError < StandardError
-  end
+  module PseudoQuery
+    class NoQueryForAction < StandardError
+    end
 
-  class NoSuchColumnDataType < StandardError
-  end
+    class WrongPseudoQuery < StandardError
+    end
 
-  class NoSuchFileError < Errno::ENOENT
-  end
+    class NoNameInQuery < StandardError
+    end
 
-  class NoSuchMethodError < NoMethodError
-  end
+    class NoRelationInQuery < StandardError
+    end
 
-  class NotPermittedForWritingFile < Errno::EACCES
-  end
-
-  class WrongParamsNumberError < StandardError
-  end
-
-  class ArrayOfItemsIsEmptyError < StandardError
+    class RelationForThisDataNotSupported < StandardError
+    end
   end
 end

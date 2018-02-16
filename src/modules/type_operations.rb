@@ -49,7 +49,6 @@ module TypeOperations
 
     def table_columns_to_string(table_columns_array)
       table_columns_array.map{ |col| col.to_s}.join(", ")
-      # table_columns_array.join(", ")
     end
 
     def convert_to_sql_type(old_type)
@@ -71,6 +70,73 @@ module TypeOperations
         sql_type = old_type
       end
       sql_type
+    end
+  end
+
+  module AbstractDomainObject
+    private
+
+    class Item
+      def initialize(new_param_options = {}, table_columns)
+        # dynamically generation attr_accessors at first, then asserting new value to existed instance variables
+        table_columns.each do |key|
+          self.class.send(:define_method, "#{key}=".to_sym) do |value|
+            instance_variable_set("@" + key.to_s, value)
+          end
+          self.class.send(:define_method, key.to_sym) do
+            instance_variable_get("@" + key.to_s)
+          end
+          self.send("#{key}=".to_sym, new_param_options[key])
+        end
+      end
+
+      def to_s
+        attr = self.instance_variables
+        values_for_attr = Array.new
+        attr.each do |var|
+          column_value = self.send(var.to_s.gsub('@', '').to_sym)
+          if column_value.class.to_s.downcase.eql? 'string'
+            values_for_attr << "'#{column_value}'"
+          else
+            values_for_attr << column_value
+          end
+        end
+        values_for_attr.join(", ")
+      end
+    end
+  end
+
+  module SqlQueriesImitation
+    include OwnExceptions::PseudoQuery
+
+    private
+
+    def check_column_name_in_pseudo_query(allowed_columns, pseudo_query_col_name)
+      return true if allowed_columns.include? pseudo_query_col_name.to_sym
+      return false
+    end
+
+    def check_relation_for_data(relation, data)
+      allowed_operations_for_strings = ['=', '!=', 'like', 'not like']
+      allowed_operations_for_numeric = ['=', '<', '>', '<=', '>=', '!=']
+      if allowed_operations_for_numeric.include? relation
+        numeric_pattern = /[-+]?\d+(\.\d+)?/
+        matches = numeric_pattern.match numeric
+        return true if matches
+      elsif allowed_operations_for_strings.include? relation
+        return true
+      end
+      return false
+    end
+
+    def pseudo_query_to_real(allowed_columns, pseudo_query)
+      query_array = pseudo_query.split(" ")
+      wrong_column_count = 1
+      raise WrongPseudoQuery, 'Wrong parameters for pseudo query' if query_array.length <= wrong_column_count
+      raise NoNameInQuery, 'No such column name' unless check_column_name_in_pseudo_query(allowed_columns, query_array[0])
+      raise RelationForThisDataNotSupported, 'wrong relation for data' unless check_relation_for_data(query_array[1], query_array[2])
+
+      query_array
     end
   end
 end
