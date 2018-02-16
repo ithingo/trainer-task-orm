@@ -19,3 +19,7 @@ test_1.delete 'name like Donald%'
 test_1.delete 'age > 34'
 # test_1.delete 'age is 34'
 # test_1.delete 'name is Donald%'
+
+# test_1.update 'what_row', 'condition'
+
+# test_1.clear_all

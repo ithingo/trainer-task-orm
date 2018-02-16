@@ -41,6 +41,10 @@ class BasicORM
     modify_data('update', condition)
   end
 
+  def clear_all
+    drop_table
+  end
+
   private
 
   def save_table
@@ -49,27 +53,22 @@ class BasicORM
     else
       id_primary_key = 'primary key'.upcase
     end
-    @table_structure.user_primary_key
-    # connection = connect
     query =  %W?
       CREATE TABLE IF NOT EXISTS #{@table_name} (
         id BIGSERIAL #{id_primary_key},
         #{struct_arr_to_string_arr(@table_structure.columns).join(', ')}
       );
     ?
-    # connection.exec query.join(" ")
-    # disconnect(connection)
+    execute_query query.join(" ")
   end
 
   def insert_to_table(table_name, table_columns, item_object)
     unless item_object.nil?
-      # connection = connect
       query = %W?
         INSERT INTO #{table_name} (#{table_columns_to_string(table_columns)})
         VALUES (#{item_object.to_s})
       ?
-      # connection.exec query.join(" ")
-      # disconnect(connection)
+      execute_query query.join(" ")
     end
   end
 
@@ -81,12 +80,32 @@ class BasicORM
     end
     raise NoQueryForAction, "There is no condition for action #{action}" if pseudo_query.nil?
 
+
+
     case action
     when 'delete'
-      p pseudo_query_to_real @table_columns_array, pseudo_query
+      # p pseudo_query_to_real @table_columns_array, pseudo_query
+      query = %W?
+        DELETE FROM #{@table_name} WHERE id IN (
+          SELECT id FROM #{@table_name} WHERE #{pseudo_query}
+        )
+      ?
     when 'update'
-
+      # p pseudo_query_to_real @table_columns_array, pseudo_query
+      query = %W?
+        UPDATE #{@table_name} SET #{pseudo_query}
+        WHERE id IN (
+          SELECT id FROM #{@table_name} WHERE #{pseudo_query}
+        )
+      ?
     end
+    execute_query query.join(" ")
   end
 
+  def drop_table
+    query = %W?
+        DROP TABLE IF EXISTS #{@table_name}
+      ?
+    execute_query query.join(" ")
+  end
 end

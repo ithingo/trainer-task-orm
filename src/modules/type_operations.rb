@@ -71,6 +71,8 @@ module TypeOperations
       end
       sql_type
     end
+
+
   end
 
   module AbstractDomainObject
@@ -111,19 +113,20 @@ module TypeOperations
 
     private
 
+    ALLOWED_OPERATIONS_FOR_STRING = ['=', '!=', 'like', 'not like']
+    ALLOWED_OPERATIONS_FOR_NUMERIC = ['=', '<', '>', '<=', '>=', '!=']
+
     def check_column_name_in_pseudo_query(allowed_columns, pseudo_query_col_name)
       return true if allowed_columns.include? pseudo_query_col_name.to_sym
       return false
     end
 
     def check_relation_for_data(relation, data)
-      allowed_operations_for_strings = ['=', '!=', 'like', 'not like']
-      allowed_operations_for_numeric = ['=', '<', '>', '<=', '>=', '!=']
-      if allowed_operations_for_numeric.include? relation
+      if ALLOWED_OPERATIONS_FOR_NUMERIC.include? relation
         numeric_pattern = /[-+]?\d+(\.\d+)?/
         matches = numeric_pattern.match data
         return true if matches
-      elsif allowed_operations_for_strings.include? relation
+      elsif ALLOWED_OPERATIONS_FOR_STRING.include? relation
         return true
       end
       return false
