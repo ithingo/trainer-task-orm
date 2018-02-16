@@ -38,13 +38,12 @@ class BasicORM
   private
 
   def save_table
-
-    if @table_structure.user_primary_key
+    unless @table_structure.user_primary_key
       id_primary_key = ' '
     else
       id_primary_key = 'primary key'.upcase
     end
-    # id_primary_key = @table_structure.user_primary_key? ? '' : ' primary key'.upcase
+    p @table_structure.user_primary_key
     connection = connect
 
     query =  %W?
@@ -53,8 +52,8 @@ class BasicORM
         #{struct_arr_to_string_arr(@table_structure.columns).join(', ')}
       );
     ?
-    query.join(" ")
-
+    p query.join(" ")
+    
     connection.exec query.join(" ")
     disconnect(connection)
   end
