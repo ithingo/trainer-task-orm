@@ -1,2 +1,4 @@
 .idea/
-examples_etc/
+.DS_Store
+src/.DS_Store
+src/modules/.DS_Store
