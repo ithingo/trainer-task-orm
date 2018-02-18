@@ -1,8 +1,9 @@
+
 require 'pg'
 
 # For Mac
-Dir[File.dirname(__FILE__) + '/src/modules/*.rb'].each { |file| require file }
-Dir[File.dirname(__FILE__) + '/src/*.rb'].each { |file| require file }
+# Dir[File.dirname(__FILE__) + '/src/modules/*.rb'].each { |file| require file }
+# Dir[File.dirname(__FILE__) + '/src/*.rb'].each { |file| require file }
 
 # For linux
 # require_relative 'src/modules/db_connection'

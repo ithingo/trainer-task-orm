@@ -39,6 +39,11 @@ class BasicORM
     modify_data('update', condition_options)
   end
 
+  def see_all
+    result = get_all_data
+    result
+  end
+
   def clear_all!
     drop_table
   end
@@ -57,8 +62,7 @@ class BasicORM
         #{struct_arr_to_string_arr(@table_structure.columns).join(', ')}
       );
     ?
-    # execute_query query.join(" ")
-    p query.join(" ")
+    execute_query query.join(" ")
   end
 
   def insert_to_table(table_name, table_columns, item_object)
@@ -67,8 +71,7 @@ class BasicORM
         INSERT INTO #{table_name} (#{table_columns_to_string(table_columns)})
         VALUES (#{item_object.to_s});
       ?
-      # execute_query query.join(" ")
-      p query.join(" ")
+      execute_query query.join(" ")
     end
   end
 
@@ -88,12 +91,6 @@ class BasicORM
       raise NoQueryForAction, 'Do not know what you want to update' if what_to_set == ''
     end
 
-
-    # check pseudo_query
-    # what_to_change = condition[:change] && check what_to_change
-    # all string types should be surrounded by '' quotes
-    # p @table_columns_array
-
     changed_pseudo_query = pseudo_query_to_real @table_columns_array, pseudo_query, @table_structure.columns
 
     case action
@@ -111,15 +108,23 @@ class BasicORM
         );
       ?
     end
-    # execute_query query.join(" ")
-    p query.join(" ")
+    execute_query query.join(" ")
   end
 
   def drop_table
     query = %W?
-        DROP TABLE IF EXISTS #{@table_name};
-      ?
-    # execute_query query.join(" ")
-    p query.join(" ")
+      DROP TABLE IF EXISTS #{@table_name};
+    ?
+    execute_query query.join(" ")
+  end
+
+  def get_all_data
+    connection = connect
+    query = %W?
+      SELECT * FROM #{@table_name};
+    ?
+    result = execute_query query.join(" ")
+    disconnect(connection)
+    result
   end
 end

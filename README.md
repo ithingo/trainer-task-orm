@@ -74,6 +74,12 @@ test_1.update('')                               #=> No condition at all!
 
 ```
 
+## Get all info (select all rows)
+
+```ruby
+result = test_1.see_all
+```
+
 ## Delete all info (with dropping table)
 
 ```ruby
@@ -89,5 +95,6 @@ test_1.clear_all!
 "DELETE FROM basicorm_table WHERE id IN ( SELECT id FROM basicorm_table WHERE name like 'Donald%' );"
 "DELETE FROM basicorm_table WHERE id IN ( SELECT id FROM basicorm_table WHERE age > 34 );"
 "UPDATE basicorm_table SET age = 65 WHERE id IN ( SELECT id FROM basicorm_table WHERE age = 64 );"
+"SELECT * FROM basicorm_table;"
 "DROP TABLE IF EXISTS basicorm_table;"
 ```
