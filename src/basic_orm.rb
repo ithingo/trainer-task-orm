@@ -10,7 +10,6 @@ class BasicORM
     @table_name = get_class_name_downcased
     @table_structure = yield(self)
     @table_columns_array = get_table_columns(@table_structure)
-    @logger = Logger.new
     @items = Array.new
     save_table
   end
@@ -20,9 +19,8 @@ class BasicORM
   end
 
   def create(item_options = {})
-    if new_item_some_params_nil?(item_options, @table_columns_array)
-      @items << Item.new(item_options, @table_columns_array)
-    end
+    raise NoColumnParamsError , 'Do not have all params' unless new_item_some_params_not_nil?(item_options, @table_columns_array)
+    @items << Item.new(item_options, @table_columns_array)
   end
 
   def save
@@ -33,15 +31,15 @@ class BasicORM
     @items = Array.new
   end
 
-  def delete(condition)
-    modify_data('delete', condition)
+  def delete(condition_options = {})
+    modify_data('delete', condition_options)
   end
 
-  def change(condition)
-    modify_data('update', condition)
+  def update(condition_options = {})
+    modify_data('update', condition_options)
   end
 
-  def clear_all
+  def clear_all!
     drop_table
   end
 
@@ -59,53 +57,69 @@ class BasicORM
         #{struct_arr_to_string_arr(@table_structure.columns).join(', ')}
       );
     ?
-    execute_query query.join(" ")
+    # execute_query query.join(" ")
+    p query.join(" ")
   end
 
   def insert_to_table(table_name, table_columns, item_object)
     unless item_object.nil?
       query = %W?
         INSERT INTO #{table_name} (#{table_columns_to_string(table_columns)})
-        VALUES (#{item_object.to_s})
+        VALUES (#{item_object.to_s});
       ?
-      execute_query query.join(" ")
+      # execute_query query.join(" ")
+      p query.join(" ")
     end
   end
 
-  def modify_data(action, pseudo_query)
+  def modify_data(action, condition)
     unless @items.length == 0
       puts 'Saving items...'
       save
       raise ItemsAreNotSaved, "You try to #{action} something, but items are not saved"
     end
-    raise NoQueryForAction, "There is no condition for action #{action}" if pseudo_query.nil?
+
+    raise NoQueryForAction, 'No condition at all!' if condition.length == 0
+
+    pseudo_query = condition[:where]
+    raise NoQueryForAction, "There is no condition for action #{action}" if pseudo_query == ''
+    if action == 'update'
+      what_to_set = condition[:change]
+      raise NoQueryForAction, 'Do not know what you want to update' if what_to_set == ''
+    end
 
 
+    # check pseudo_query
+    # what_to_change = condition[:change] && check what_to_change
+    # all string types should be surrounded by '' quotes
+    # p @table_columns_array
+
+    changed_pseudo_query = pseudo_query_to_real @table_columns_array, pseudo_query, @table_structure.columns
 
     case action
     when 'delete'
-      # p pseudo_query_to_real @table_columns_array, pseudo_query
       query = %W?
         DELETE FROM #{@table_name} WHERE id IN (
-          SELECT id FROM #{@table_name} WHERE #{pseudo_query}
-        )
+          SELECT id FROM #{@table_name} WHERE #{changed_pseudo_query}
+        );
       ?
     when 'update'
-      # p pseudo_query_to_real @table_columns_array, pseudo_query
       query = %W?
-        UPDATE #{@table_name} SET #{pseudo_query}
+        UPDATE #{@table_name} SET #{what_to_set}
         WHERE id IN (
-          SELECT id FROM #{@table_name} WHERE #{pseudo_query}
-        )
+          SELECT id FROM #{@table_name} WHERE #{changed_pseudo_query}
+        );
       ?
     end
-    execute_query query.join(" ")
+    # execute_query query.join(" ")
+    p query.join(" ")
   end
 
   def drop_table
     query = %W?
-        DROP TABLE IF EXISTS #{@table_name}
+        DROP TABLE IF EXISTS #{@table_name};
       ?
-    execute_query query.join(" ")
+    # execute_query query.join(" ")
+    p query.join(" ")
   end
 end

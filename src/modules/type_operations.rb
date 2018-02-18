@@ -34,9 +34,10 @@ module TypeOperations
       end
     end
 
-    def new_item_some_params_nil?(new_item_options = {}, table_structure_columns)
+    def new_item_some_params_not_nil?(new_item_options = {}, table_structure_columns)
       table_structure_columns.each do |col_name|
-        unless new_item_options[col_name]
+        value = new_item_options[col_name]
+        if value == '' || value.nil?
           return false
         end
       end
@@ -132,14 +133,22 @@ module TypeOperations
       return false
     end
 
-    def pseudo_query_to_real(allowed_columns, pseudo_query)
+    def pseudo_query_to_real(allowed_columns, pseudo_query, table_structure_columns)
       query_array = pseudo_query.split(" ")
       wrong_column_count = 1
       raise WrongPseudoQuery, 'Wrong parameters for pseudo query' if query_array.length <= wrong_column_count
       raise NoNameInQuery, 'No such column name' unless check_column_name_in_pseudo_query(allowed_columns, query_array[0])
-      raise RelationForThisDataNotSupported, 'wrong relation for data' unless check_relation_for_data(query_array[1], query_array[2])
+      raise RelationForThisDataNotSupported, 'Wrong relation for data' unless check_relation_for_data(query_array[1], query_array[2])
 
-      query_array
+      if allowed_columns.include? query_array[0].to_sym
+        table_structure_columns.each do |structure|
+          if structure.col_name == query_array[0].to_sym && structure.type == 'string'
+            query_array[2] = "'#{query_array[2]}'"
+          end
+        end
+      end
+
+      query_array.join(' ')
     end
   end
 end

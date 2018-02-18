@@ -1,6 +1,6 @@
 module OwnExceptions
   module Common
-    class ItemNotSupported < StandardError
+    class ItemsAreNotSaved < StandardError
     end
 
     class NoColumnParamsError < StandardError

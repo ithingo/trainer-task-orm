@@ -61,22 +61,33 @@ test_1.update(where: 'age = 64', change: 'age = 65')
 
 ### WRONG USAGE: 
 ```ruby
-# test_1.delete(where:'age is 34')                #=> Wrong relation for data
-# test_1.delete(where: 'name is Donald%')         #=> Wrong relation for data
-# test_1.delete(where: '')                        #=> There is no condition for action delete
-# test_1.delete()                                 #=> No condition at all!
-# test_1.delete('')                               #=> No condition at all!
+test_1.delete(where:'age is 34')                #=> Wrong relation for data
+test_1.delete(where: 'name is Donald%')         #=> Wrong relation for data
+test_1.delete(where: '')                        #=> There is no condition for action delete
+test_1.delete()                                 #=> No condition at all!
+test_1.delete('')                               #=> No condition at all!
 
-# test_1.update(where: '', change: 'age = 65')    #=> There is no condition for action update
-# test_1.update(where: 'age = 64', change: '')    #=> Do not know what you want to update
-# test_1.update()                                 #=> No condition at all!
-# test_1.update('')                               #=> No condition at all!
+test_1.update(where: '', change: 'age = 65')    #=> There is no condition for action update
+test_1.update(where: 'age = 64', change: '')    #=> Do not know what you want to update
+test_1.update()                                 #=> No condition at all!
+test_1.update('')                               #=> No condition at all!
 
 ```
-
 
 ## Delete all info (with dropping table)
 
 ```ruby
 test_1.clear_all!
+```
+
+## What should expect at output:
+
+```ruby
+"CREATE TABLE IF NOT EXISTS basicorm_table ( id BIGSERIAL  , name VARCHAR(255) NOT NULL PRIMARY KEY, age INTEGER NOT NULL, address TEXT  );"
+"INSERT INTO basicorm_table (name, age, address) VALUES ('Vladimir Putin', 64, 'Moscow');"
+"INSERT INTO basicorm_table (name, age, address) VALUES ('Donald J. Trump', 71, 'Washington D.C.');"
+"DELETE FROM basicorm_table WHERE id IN ( SELECT id FROM basicorm_table WHERE name like 'Donald%' );"
+"DELETE FROM basicorm_table WHERE id IN ( SELECT id FROM basicorm_table WHERE age > 34 );"
+"UPDATE basicorm_table SET age = 65 WHERE id IN ( SELECT id FROM basicorm_table WHERE age = 64 );"
+"DROP TABLE IF EXISTS basicorm_table;"
 ```
