@@ -1,5 +1,5 @@
 # Own ORM Realization
-This is an educational project which is created by task of writing own ORM basic realization
+This was an educational project which was created by task of writing own ORM basic realization when I was a trainee) I tried to make just a simple implementation of ORM without plans for further development of it.
 
 # Usage
 
@@ -9,9 +9,9 @@ Sample code for new model table creation in DSL-style:
 ```ruby
 test_1 = BasicORM.new do |app|
   app.create_table do |table|
-    table.add_column :name, table.string, 'not null primary key'
-    table.add_column :age, table.integer, 'not null'
-    table.add_column :address, table.text
+    table.add_column :name,     table.string,   'not null primary key'
+    table.add_column :age,      table.integer,  'not null'
+    table.add_column :address,  table.text
   end
 end
 ```
@@ -20,8 +20,8 @@ end
 Sample that shows how to create new item with this model. You should use only those params aka column names which are defined before. All 'extra' object properties will be ignored without migrations which are not yet supported. =)
 
 ```ruby
-test_1.create(name: "Sean Connery", age: 87, address: "Edinburg")
-test_1.create(name: "Vladimir Putin", age: 64, address: "Moscow")
+test_1.create(name: "Richard Stallman", age: 65, address: "USA")
+test_1.create(name: "Steve Wozniak", age: 68, address: "USA")
 test_1.create(name: "Donald J. Trump", age: 71, address: "Washington D.C.")
 ```
 
@@ -29,7 +29,7 @@ test_1.create(name: "Donald J. Trump", age: 71, address: "Washington D.C.")
 Sample of code to save all our items to atabase. For example, we create two items with properties for our table specified above
 
 ```ruby
-test_1.create(name: "Vladimir Putin", age: 65, address: "Moscow")
+test_1.create(name: "Steve Wozniak", age: 68, address: "USA")
 test_1.create(name: "Donald J. Trump", age: 71, address: "Washington D.C.")
 # ...
 test_1.save
@@ -90,7 +90,7 @@ test_1.clear_all!
 
 ```ruby
 "CREATE TABLE IF NOT EXISTS basicorm_table ( id BIGSERIAL  , name VARCHAR(255) NOT NULL PRIMARY KEY, age INTEGER NOT NULL, address TEXT  );"
-"INSERT INTO basicorm_table (name, age, address) VALUES ('Vladimir Putin', 64, 'Moscow');"
+"INSERT INTO basicorm_table (name, age, address) VALUES ('Richard Stallman', 65, 'USA');"
 "INSERT INTO basicorm_table (name, age, address) VALUES ('Donald J. Trump', 71, 'Washington D.C.');"
 "DELETE FROM basicorm_table WHERE id IN ( SELECT id FROM basicorm_table WHERE name like 'Donald%' );"
 "DELETE FROM basicorm_table WHERE id IN ( SELECT id FROM basicorm_table WHERE age > 34 );"
